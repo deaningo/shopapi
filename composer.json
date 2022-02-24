@@ -13,7 +13,6 @@
     ],
     "require": {
         "php" : ">=7.4",
-        "geekshare/shopapi" : "1.*"
     },
     "license": "MIT"
 }
