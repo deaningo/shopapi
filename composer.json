@@ -11,6 +11,8 @@
             "email": "996472676@qq.com"
         }
     ],
-    "require": {},
+    "require": {
+        "php" : ">=7.4"
+    },
     "license": "MIT"
 }
