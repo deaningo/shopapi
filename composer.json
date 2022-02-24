@@ -1,0 +1,15 @@
+{
+    "name": "geekshare/shopapi",
+    "autoload": {
+        "psr-4": {
+            "geekshare\\shopapi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "zhouhg",
+            "email": "996472676@qq.com"
+        }
+    ],
+    "require": {}
+}
