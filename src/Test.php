@@ -1,5 +1,5 @@
 <?php
-namespace geekershare\shopapi;
+namespace geekshare\shopapi;
  
 class Test
 {
