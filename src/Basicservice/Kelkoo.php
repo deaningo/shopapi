@@ -1,23 +1,23 @@
-<?php 
+<?php
+namespace geekshare\shopapi\Basicservice;
 class Kelkoo{
-    public $partner,$key;
+    private $country,$partner,$key;
 
-    public function _construct($partner,$key){
+    public function __construct($country,$partner,$key){
+        $this->country = $country;
         $this->partner = $partner;
         $this->key = $key;
     }
 
-    function get_data_kelkoo($data_arr,$pagenumber=20,$page=1){
-
+    public function get_data_kelkoo($keywords,$pagenumber=20,$page=1){
+        //basic params
         $data["logicalType"]="or";
         $data["sort"]="default_ranking";
         $data["show_products"]=1;
         $data["show_subcategories"]=0;
         $data["show_refinements"]=0;
-        $data=array_merge($data,$data_arr);
+        $data["query"] = $keywords;
     
-    
-        // $start=(($page-1)*$pagenumber)+1;
         $start=$page*$pagenumber;
         $results=$pagenumber;
     
@@ -26,30 +26,30 @@ class Kelkoo{
         foreach($data as $k=>$val){
             $line.="&".$k."=".$val;
         }
-        $url = $this->UrlSigner('http://uk.shoppingapis.kelkoo.com', '/V3/productSearch'.$line, $this->partner, $this->key);
-    
+        $url = $this->UrlSigner('http://'.$this->country.'.shoppingapis.kelkoo.com', '/V3/productSearch'.$line, $this->partner, $this->key);
+
         $xml = $this->get_url($url);
         
         $list = simplexml_load_string($xml);
-        
+
         $data=[];
         
         if(!empty($list)){
-            $data["product"]= $this->kelkoo_prodect($list->Products->Product);
-            $data["count"]=$list->Products->attributes()->totalResultsAvailable;
+            $data["status"] = "1";
+            $data["product"] = $this->kelkoo_prodect($list->Products->Product);
+            $data["count"] = $list->Products->attributes()->totalResultsAvailable;
         }else{
+            $data["status"] = "0";
             $data["product"]=[];
             $data["count"]=0;
         }
-        
+
         return $data;
-        
     }
 
-    function kelkoo_prodect($data){
+    private function kelkoo_prodect($data){
         $return_result=[];
         foreach ($data as $k=>$val){
-            // var_dump($val);
             $result['id'] = (string)$val->Offer->attributes()->id;
             $result['titles'] = (string)$val->Offer->Title;
             $result['brand'] = (string)$val->Offer->Brand;
@@ -58,14 +58,13 @@ class Kelkoo{
             $result['des'] = (string)$val->Offer->Description;
             $result['price'] = (string)$val->Offer->Price->Price;
             $result['old_price'] = (string)$val->Offer->Price->TotalPrice;
-            $result['s_type'] = (string)'shipping';
-            
+            $result['s_type'] = 'shipping';
             array_push($return_result,$result);
         }
         return $return_result;
     }
 
-    function get_url($url)
+    private function get_url($url)
     {
         $opts = array(
             'http' => array(
@@ -79,7 +78,7 @@ class Kelkoo{
         return $content;
     }
 
-    function UrlSigner($urlDomain, $urlPath, $partner, $key){
+    private function UrlSigner($urlDomain, $urlPath, $partner, $key){
         settype($urlDomain, 'String');
         settype($urlPath, 'String');
         settype($partner, 'String');
